@@ -35,38 +35,36 @@ try {
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    if(isset($_POST['name']) && isset($_POST['weight']) && isset($_POST['height']) && isset($_POST['order_address']) && isset($_POST['delivery_price']) &&  isset($_POST['phone_number'])) {
+    if(empty($_POST['name']) || empty($_POST['weight']) || empty($_POST['height']) || empty($_POST['order_address']) || empty($_POST['delivery_price']) ||  empty($_POST['phone_number'])) {
+        echo json_encode(array('status' => false, 'message' => 'please enter all fields '));
+        return false;
+    }
+    $name = $_POST['name'];
+    $weight = $_POST['weight'];
+    $height = $_POST['height'];
+    $order_address = $_POST['order_address'];
+    $delivery_price = $_POST['delivery_price'];
+    $phone_number = $_POST['phone_number'];
 
-
-        $name = $_POST['name'];
-        $weight = $_POST['weight'];
-        $height = $_POST['height'];
-        $order_address = $_POST['order_address'];
-        $delivery_price = $_POST['delivery_price'];
-        $phone_number = $_POST['phone_number'];
-
-        $sql = "INSERT INTO `shipments` (`id`, `name`, `weight`,`height`,`order_address`,`delivery_price`,`phone_number`) VALUES (null, :name,:weight,:height,:order_address,:delivery_price,:phone_number)";
-        $stmt= $conn->prepare($sql);
-        $stmt->execute([
-            ':name' => $name,
-            ':weight' => $weight,
-            ':height' => $height ,
-            ':order_address' => $order_address ,
-            ':delivery_price' => $delivery_price ,
-            ':phone_number' => $phone_number,
-        ]);
-        if($stmt){
-            $resultData = array('status' => true, 'message' => 'shipments inserted successfully  ');
-        }else{
-            $resultData = array('status' => false, 'message' => 'Error in insert ');
-        }
-
-
+    $sql = "INSERT INTO `shipments` (`id`, `name`, `weight`,`height`,`order_address`,`delivery_price`,`phone_number`) VALUES (null, :name,:weight,:height,:order_address,:delivery_price,:phone_number)";
+    $stmt= $conn->prepare($sql);
+    $stmt->execute([
+        ':name' => $name,
+        ':weight' => $weight,
+        ':height' => $height ,
+        ':order_address' => $order_address ,
+        ':delivery_price' => $delivery_price ,
+        ':phone_number' => $phone_number,
+    ]);
+    if($stmt){
+        $resultData = array('status' => true, 'message' => 'shipments inserted successfully  ');
     }else{
-        $resultData = array('status' => false, 'message' => 'please enter all fields ');
+        $resultData = array('status' => false, 'message' => 'Error in insert ');
     }
 
 
+
+    echo json_encode($resultData);
 }
 
 
@@ -78,7 +76,7 @@ if(isset($_GET['order'])) {
     $shipments->execute([
         ':order' => $order_number,
     ]);
-   echo json_encode($shipments->fetchAll(PDO::FETCH_ASSOC));
+    echo json_encode($shipments->fetchAll(PDO::FETCH_ASSOC));
 
 }
 
